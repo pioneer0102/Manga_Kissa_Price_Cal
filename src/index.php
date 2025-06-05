@@ -1,6 +1,13 @@
 <?php
 
-require_once 'src/MangaCafeCalculator.php';
+declare(strict_types=1);
+
+namespace App;
+
+use DateTimeImmutable;
+use Exception;
+
+require_once 'MangaCafeCalculator.php';
 
 /**
  * マンガ喫茶料金計算の使用例.
@@ -12,6 +19,7 @@ echo "=== マンガ喫茶料金計算システム ===\n\n";
 // 利用可能なコース一覧を表示
 echo "【利用可能なコース】\n";
 $courses = $calculator->getAvailableCourses();
+
 foreach ($courses as $key => $course) {
     echo "- {$key}: {$course['name']} - {$course['price']}円（税抜）\n";
 }
@@ -28,10 +36,10 @@ try {
 
     printResult($result);
 } catch (Exception $e) {
-    echo 'エラー: '.$e->getMessage()."\n";
+    echo 'エラー: ' . $e->getMessage() . "\n";
 }
 
-echo "\n".str_repeat('-', 50)."\n\n";
+echo "\n" . str_repeat('-', 50) . "\n\n";
 
 // 例2: 延長あり（深夜時間なし）
 echo "【例2: 3時間パック、1時間30分延長（深夜時間なし）】\n";
@@ -44,10 +52,10 @@ try {
 
     printResult($result);
 } catch (Exception $e) {
-    echo 'エラー: '.$e->getMessage()."\n";
+    echo 'エラー: ' . $e->getMessage() . "\n";
 }
 
-echo "\n".str_repeat('-', 50)."\n\n";
+echo "\n" . str_repeat('-', 50) . "\n\n";
 
 // 例3: 深夜時間帯を含む延長
 echo "【例3: 8時間パック、深夜時間帯を含む延長】\n";
@@ -60,10 +68,10 @@ try {
 
     printResult($result);
 } catch (Exception $e) {
-    echo 'エラー: '.$e->getMessage()."\n";
+    echo 'エラー: ' . $e->getMessage() . "\n";
 }
 
-echo "\n".str_repeat('-', 50)."\n\n";
+echo "\n" . str_repeat('-', 50) . "\n\n";
 
 // 例4: 短時間利用（1分延長）
 echo "【例4: 1時間コース、1分延長】\n";
@@ -76,7 +84,7 @@ try {
 
     printResult($result);
 } catch (Exception $e) {
-    echo 'エラー: '.$e->getMessage()."\n";
+    echo 'エラー: ' . $e->getMessage() . "\n";
 }
 
 /**
@@ -99,6 +107,7 @@ function printResult(array $result): void
 
     if (isset($result['breakdown']['extension_details'])) {
         echo "\n【延長料金詳細】\n";
+
         foreach ($result['breakdown']['extension_details'] as $detail) {
             $nightInfo = $detail['is_night_time'] ? '（深夜割増）' : '';
             echo "- {$detail['period']}: {$detail['fee']}円{$nightInfo}\n";

@@ -1,2 +1,15 @@
+# Composer files
 /vendor/
 composer.lock
+
+# PHP CS Fixer cache
+.php-cs-fixer.cache
+
+# PHPStan cache
+.phpstan/
+
+# Testing
+.phpunit.result.cache
+
+# Logs
+*.log

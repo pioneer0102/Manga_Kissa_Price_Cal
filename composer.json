@@ -1,5 +1,45 @@
 {
     "name": "administrator/manga_kissa_price_cal",
+    "description": "Manga Cafe Calculator with Professional PHP Linting",
+    "type": "project",    
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.75",
+        "phpstan/phpstan": "^1.10",
+        "squizlabs/php_codesniffer": "^3.7"
+    },    
+    "scripts": {
+        "dev": "php src/index.php",
+        "test": "php tests/test.php",
+        "syntax-check": "@php syntax-check.php",
+        "lint": "php-cs-fixer fix --dry-run --diff",
+        "lint-fix": "php-cs-fixer fix",
+        "phpcs": "phpcs --standard=phpcs.xml",
+        "phpcs-fix": "phpcbf",
+        "phpstan": "phpstan analyse --no-progress",
+        "lint-all": [
+            "@syntax-check",
+            "@phpcs",
+            "@phpstan",
+            "@lint"
+        ],
+        "fix-all": [
+            "@syntax-check",
+            "@phpcs-fix",
+            "@lint-fix",
+            "@phpcs",
+            "@phpstan"
+        ],
+        "quality": [
+            "echo 'Running complete quality check...'",
+            "@fix-all"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "Administrator\\MangaKissaPriceCal\\": "src/"
@@ -10,6 +50,5 @@
             "name": "pioneer0102",
             "email": "phxstec@gmail.com"
         }
-    ],
-    "require": {}
+    ]
 }
