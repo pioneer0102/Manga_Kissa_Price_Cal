@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Custom PHP CodeSniffer Configuration">
+    <description>Custom PHP CodeSniffer rules for professional PHP development</description>    <!-- Use PSR-12 as the base standard -->
+    <rule ref="PSR12">
+        <!-- Exclude problematic sniffs that cause PHPCBF crashes -->
+        <exclude name="PSR12.Functions.ReturnTypeDeclaration"/>
+        <!-- Allow flexible namespace usage -->
+        <exclude name="PSR12.Classes.ClassInstantiation"/>
+    </rule><!-- Include only source files -->
+    <file>src/</file>
+    <file>tests/</file>
+
+    <!-- Exclude vendor and other non-source directories -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/cache/*</exclude-pattern>
+    <exclude-pattern>*/build/*</exclude-pattern>
+      <!-- Show progress -->
+    <arg name="report" value="full"/>
+    <arg name="colors"/>
+    <arg value="p"/>    <!-- Allow longer lines for Japanese comments and strings -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="150"/>
+        </properties>
+    </rule>
+    
+    <!-- Relax some rules for better compatibility with existing code -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Additional rules for better code quality -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.Commenting.Todo"/>
+    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+    <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+    <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+    <rule ref="Generic.PHP.DeprecatedFunctions"/>
+    <rule ref="Generic.PHP.DisallowAlternativePHPTags"/>
+    <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+    <rule ref="Generic.PHP.ForbiddenFunctions"/>
+    <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+    <rule ref="Generic.WhiteSpace.ScopeIndent"/>
+
+    <!-- Squiz rules -->
+    <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+    <rule ref="Squiz.Classes.ValidClassName"/>
+    <rule ref="Squiz.ControlStructures.ControlSignature"/>
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing"/>
+    <rule ref="Squiz.Scope.MethodScope"/>
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace"/>
+</ruleset>

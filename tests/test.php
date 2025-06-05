@@ -1,6 +1,15 @@
 <?php
 
-require_once 'src/MangaCafeCalculator.php';
+declare(strict_types=1);
+
+namespace Tests;
+
+use App\CourseType;
+use App\MangaCafeCalculator;
+use DateTimeImmutable;
+use InvalidArgumentException;
+
+require_once __DIR__ . '/../src/MangaCafeCalculator.php';
 
 /**
  * マンガ喫茶料金計算のテストケース.
@@ -8,6 +17,7 @@ require_once 'src/MangaCafeCalculator.php';
 class MangaCafeCalculatorTest
 {
     private MangaCafeCalculator $calculator;
+
     /** @var array<bool> */
     private array $testResults = [];
 
@@ -44,9 +54,21 @@ class MangaCafeCalculatorTest
         $checkOut = new DateTimeImmutable('2025-06-04 17:00:00');
         $result = $this->calculator->calculate($checkIn, $checkOut, CourseType::PACK_3HOUR);
 
-        $this->assert(800 === $result['total_excluding_tax'], '3時間パック基本料金', "期待値: 800円, 実際: {$result['total_excluding_tax']}円");
-        $this->assert(0 === $result['extension_minutes'], '延長時間なし', "期待値: 0分, 実際: {$result['extension_minutes']}分");
-        $this->assert(880 === $result['total_including_tax'], '税込金額', "期待値: 880円, 実際: {$result['total_including_tax']}円");
+        $this->assert(
+            800 === $result['total_excluding_tax'],
+            '3時間パック基本料金',
+            "期待値: 800円, 実際: {$result['total_excluding_tax']}円"
+        );
+        $this->assert(
+            0 === $result['extension_minutes'],
+            '延長時間なし',
+            "期待値: 0分, 実際: {$result['extension_minutes']}分"
+        );
+        $this->assert(
+            880 === $result['total_including_tax'],
+            '税込金額',
+            "期待値: 880円, 実際: {$result['total_including_tax']}円"
+        );
 
         echo "\n";
     }
@@ -65,7 +87,11 @@ class MangaCafeCalculatorTest
 
         $this->assert(1 === $result['extension_minutes'], '1分延長', "期待値: 1分, 実際: {$result['extension_minutes']}分");
         $this->assert(100 === $result['extension_fee'], '延長料金', "期待値: 100円, 実際: {$result['extension_fee']}円");
-        $this->assert(600 === $result['total_excluding_tax'], '合計（税抜）', "期待値: 600円, 実際: {$result['total_excluding_tax']}円");
+        $this->assert(
+            600 === $result['total_excluding_tax'],
+            '合計（税抜）',
+            "期待値: 600円, 実際: {$result['total_excluding_tax']}円"
+        );
 
         // 3時間パック + 25分延長（10分ブロック3つ分）
         $checkIn = new DateTimeImmutable('2025-06-04 14:00:00');
@@ -110,7 +136,11 @@ class MangaCafeCalculatorTest
         $checkOut = new DateTimeImmutable('2025-06-04 16:00:01');
         $result = $this->calculator->calculate($checkIn, $checkOut, CourseType::REGULAR_1HOUR);
 
-        $this->assert(1 === $result['extension_minutes'], '1秒延長は1分とカウント', "期待値: 1分, 実際: {$result['extension_minutes']}分");
+        $this->assert(
+            1 === $result['extension_minutes'],
+            '1秒延長は1分とカウント',
+            "期待値: 1分, 実際: {$result['extension_minutes']}分"
+        );
         $this->assert(100 === $result['extension_fee'], '1秒延長でも延長料金発生', "期待値: 100円, 実際: {$result['extension_fee']}円");
 
         // 深夜時間境界（22:00-22:01）
@@ -162,6 +192,7 @@ class MangaCafeCalculatorTest
         $this->testResults[] = $condition;
 
         echo "- {$testName}: {$result}";
+
         if (!empty($message)) {
             echo " ({$message})";
         }
@@ -177,7 +208,7 @@ class MangaCafeCalculatorTest
         $passed = array_sum($this->testResults);
         $failed = $total - $passed;
 
-        echo str_repeat('=', 50)."\n";
+        echo str_repeat('=', 50) . "\n";
         echo "テスト結果サマリー\n";
         echo "総テスト数: {$total}\n";
         echo "成功: {$passed}\n";

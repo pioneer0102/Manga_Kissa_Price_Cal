@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace App;
+
 /**
  * マンガ喫茶のコース種別定義.
  */

@@ -1,6 +1,15 @@
 <?php
 
-require_once 'src/CourseType.php';
+declare(strict_types=1);
+
+namespace App;
+
+use DateInterval;
+use DateTimeImmutable;
+use InvalidArgumentException;
+
+require_once 'CourseType.php';
+
 /**
  * マンガ喫茶料金計算クラス.
  */
@@ -24,9 +33,9 @@ class MangaCafeCalculator
     /**
      * 料金を計算する.
      *
-     * @param DateTimeImmutable $checkIn    入店日時
-     * @param DateTimeImmutable $checkOut   退店日時
-     * @param string            $courseType コース種別
+     * @param DateTimeImmutable $checkIn 入店日時
+     * @param DateTimeImmutable $checkOut 退店日時
+     * @param string $courseType コース種別
      *
      * @return array 計算結果
      *
@@ -44,10 +53,11 @@ class MangaCafeCalculator
         }
 
         $courseDetails = CourseType::getCourseDetails($courseType);
-        if ($courseDetails === null) {
+
+        if (null === $courseDetails) {
             throw new InvalidArgumentException("コース詳細が取得できません: {$courseType}");
         }
-        
+
         $totalMinutes = $this->calculateTotalMinutes($checkIn, $checkOut);
 
         // コース基本料金
@@ -56,7 +66,12 @@ class MangaCafeCalculator
 
         // 延長時間の計算
         $extensionMinutes = max(0, $totalMinutes - $courseMinutes);
-        $extensionFee = $this->calculateExtensionFee($checkIn, $checkOut, (int) $courseMinutes, (int) $extensionMinutes);
+        $extensionFee = $this->calculateExtensionFee(
+            $checkIn,
+            $checkOut,
+            (int) $courseMinutes,
+            (int) $extensionMinutes
+        );
 
         // 合計金額（税抜）
         $totalExcludingTax = $baseFee + $extensionFee;
@@ -73,7 +88,12 @@ class MangaCafeCalculator
             'total_excluding_tax' => $totalExcludingTax,
             'total_including_tax' => (int) $totalIncludingTax,
             'tax_amount' => (int) ($totalIncludingTax - $totalExcludingTax),
-            'breakdown' => $this->getDetailedBreakdown($checkIn, $checkOut, (int) $courseMinutes, (int) $extensionMinutes),
+            'breakdown' => $this->getDetailedBreakdown(
+                $checkIn,
+                $checkOut,
+                (int) $courseMinutes,
+                (int) $extensionMinutes
+            ),
         ];
     }
 
@@ -98,8 +118,12 @@ class MangaCafeCalculator
     /**
      * 延長料金を計算.
      */
-    private function calculateExtensionFee(DateTimeImmutable $checkIn, DateTimeImmutable $checkOut, int $courseMinutes, int $extensionMinutes): int
-    {
+    private function calculateExtensionFee(
+        DateTimeImmutable $checkIn,
+        DateTimeImmutable $checkOut,
+        int $courseMinutes,
+        int $extensionMinutes
+    ): int {
         if ($extensionMinutes <= 0) {
             return 0;
         }
@@ -114,8 +138,8 @@ class MangaCafeCalculator
 
         // 各10分ブロックごとに深夜割増を計算
         for ($i = 0; $i < $extensionBlocks; ++$i) {
-            $blockStart = $extensionStart->add(new DateInterval('PT'.($i * 10).'M'));
-            $blockEnd = $extensionStart->add(new DateInterval('PT'.(($i + 1) * 10).'M'));
+            $blockStart = $extensionStart->add(new DateInterval('PT' . ($i * 10) . 'M'));
+            $blockEnd = $extensionStart->add(new DateInterval('PT' . (($i + 1) * 10) . 'M'));
 
             // 実際の終了時刻を超えないように調整
             if ($blockEnd > $checkOut) {
@@ -123,6 +147,7 @@ class MangaCafeCalculator
             }
 
             $baseFee = self::EXTENSION_FEE_PER_10MIN;
+
             // 深夜時間帯に1分でも含まれているかチェック
             if ($this->isNightTime($blockStart, $blockEnd)) {
                 $baseFee = (int) round($baseFee * (1 + self::NIGHT_SURCHARGE_RATE));
@@ -137,8 +162,10 @@ class MangaCafeCalculator
     /**
      * 指定期間が深夜時間帯に含まれるかチェック.
      */
-    private function isNightTime(DateTimeImmutable $start, DateTimeImmutable $end): bool
-    {
+    private function isNightTime(
+        DateTimeImmutable $start,
+        DateTimeImmutable $end
+    ): bool {
         $current = $start;
 
         while ($current < $end) {
@@ -157,13 +184,17 @@ class MangaCafeCalculator
     /**
      * 詳細な内訳を取得.
      */
-    private function getDetailedBreakdown(DateTimeImmutable $checkIn, DateTimeImmutable $checkOut, int $courseMinutes, int $extensionMinutes): array
-    {
+    private function getDetailedBreakdown(
+        DateTimeImmutable $checkIn,
+        DateTimeImmutable $checkOut,
+        int $courseMinutes,
+        int $extensionMinutes
+    ): array {
         $breakdown = [
             'check_in' => $checkIn->format('Y-m-d H:i:s'),
             'check_out' => $checkOut->format('Y-m-d H:i:s'),
-            'course_time' => $courseMinutes.'分',
-            'extension_time' => $extensionMinutes.'分',
+            'course_time' => $courseMinutes . '分',
+            'extension_time' => $extensionMinutes . '分',
         ];
 
         if ($extensionMinutes > 0) {
@@ -173,8 +204,8 @@ class MangaCafeCalculator
             $breakdown['extension_details'] = [];
 
             for ($i = 0; $i < $extensionBlocks; ++$i) {
-                $blockStart = $extensionStart->add(new DateInterval('PT'.($i * 10).'M'));
-                $blockEnd = $extensionStart->add(new DateInterval('PT'.(($i + 1) * 10).'M'));
+                $blockStart = $extensionStart->add(new DateInterval('PT' . ($i * 10) . 'M'));
+                $blockEnd = $extensionStart->add(new DateInterval('PT' . (($i + 1) * 10) . 'M'));
 
                 if ($blockEnd > $checkOut) {
                     $blockEnd = $checkOut;
@@ -182,12 +213,13 @@ class MangaCafeCalculator
 
                 $isNight = $this->isNightTime($blockStart, $blockEnd);
                 $fee = self::EXTENSION_FEE_PER_10MIN;
+
                 if ($isNight) {
                     $fee = (int) round($fee * (1 + self::NIGHT_SURCHARGE_RATE));
                 }
 
                 $breakdown['extension_details'][] = [
-                    'period' => $blockStart->format('H:i').'-'.$blockEnd->format('H:i'),
+                    'period' => $blockStart->format('H:i') . '-' . $blockEnd->format('H:i'),
                     'is_night_time' => $isNight,
                     'fee' => $fee,
                 ];

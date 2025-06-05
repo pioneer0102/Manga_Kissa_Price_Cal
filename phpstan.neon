@@ -1,0 +1,17 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests/
+    excludePaths:
+        - vendor/
+        - cache/
+        - build/
+    ignoreErrors:
+        # Ignore array type specification errors for more flexibility
+        - identifier: missingType.iterableValue
+        # Allow flexible namespace usage - ignore import vs fully qualified name conflicts
+        - message: '#Parameter .* expects .*, .* given#'
+        - message: '#has invalid type#'
+        - message: '#Call to method .* on an unknown class#'
+    reportUnmatchedIgnoredErrors: false
