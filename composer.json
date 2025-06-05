@@ -1,0 +1,15 @@
+{
+    "name": "administrator/manga_kissa_price_cal",
+    "autoload": {
+        "psr-4": {
+            "Administrator\\MangaKissaPriceCal\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "pioneer0102",
+            "email": "phxstec@gmail.com"
+        }
+    ],
+    "require": {}
+}
